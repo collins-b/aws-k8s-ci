@@ -57,15 +57,7 @@ jobs:
       - run:
           name: Start app
           command: |
-            mkdir logs && yarn start &
-      
-      - run:
-          name: Storing local IP address
-          command: node -p "require('ip').address()" > logs/ip.log
-      
-      - run:
-          name: Waiting for node server
-          command: wget --retry-connrefused --waitretry=2 -t 5 "http://$(cat logs/ip.log):3000" > /dev/null
+            yarn start &
 
       - run:
           name: Run tests
