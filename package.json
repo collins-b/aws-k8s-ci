@@ -1,0 +1,26 @@
+{
+  "name": "gcloud-deploy-node-app",
+  "version": "1.0.0",
+  "description": "Tutorial leading to a deployment of a simple node app to gcloud",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha"
+  },
+  "keywords": [
+    "gcloud",
+    "node"
+  ],
+  "author": "Collins",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "morgan": "^1.8.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "request": "^2.88.0"
+  }
+}
