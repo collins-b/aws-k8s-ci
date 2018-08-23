@@ -57,7 +57,7 @@ jobs:
       - run:
           name: Start app
           command: |
-            yarn start
+            yarn start &
 
       - run:
           name: Run tests
