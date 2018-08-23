@@ -169,4 +169,8 @@ NAME                                                                  READY     
 kubernetes-dashboard-7d5dcdb6d9-fvm2c                                 1/1       Running   0          3h
 ```
 
-To open the dashboard, on your terminal, type `kubectl proxy`
+To open the dashboard, on your terminal, type `kubectl proxy`. Then navigate to:
+
+```
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+```
