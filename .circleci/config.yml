@@ -57,7 +57,7 @@ jobs:
       - run:
           name: Start app
           command: |
-            mkdir logs && yarn start 2>&1 | tee logs/node_server.log
+            mkdir logs && yarn start &
       
       - run:
           name: Storing local IP address
