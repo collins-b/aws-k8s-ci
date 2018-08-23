@@ -39,12 +39,26 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
 
-    working_directory: ~/repo/demo
+    working_directory: ~/workspace
 
     steps:
       - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
 
-      # Download and cache dependencies
+      - run:
+          name: Install node packages
+          command: |
+            npm install
+
+      - run:
+          name: Run tests
+          command: |
+            npm test
+  
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
