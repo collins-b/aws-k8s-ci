@@ -73,17 +73,16 @@ Let us now provision Kubernetes on AWS. First off, install kops:
 
 OSX - `brew install kops`
 
-Linux - ```
-         curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://		  api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f        4)/kops-linux-amd64
+Linux - 
+
+```
+curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+
 ```
 
-`
-chmod +x kops-linux-amd64
-`
+`chmod +x kops-linux-amd64`
 
-`
-sudo mv kops-linux-amd64 /usr/local/bin/kops
-`
+`sudo mv kops-linux-amd64 /usr/local/bin/kops`
 
 Before creating let's set environment variables for the cluster.
 Run the following in your terminal:
