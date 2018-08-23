@@ -174,7 +174,9 @@ To open the dashboard, on your terminal, type `kubectl proxy`. Then navigate to:
 http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 ```
 
-###  Docker registry
+###  Docker Registry
 
 I'll use [Docker hub](https://hub.docker.com/) as the registry, which will host the image we'll be using in this article. 
 I pushed the image [here](https://hub.docker.com/r/wecs/demo/).
+
+### CircleCI
