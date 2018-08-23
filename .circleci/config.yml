@@ -52,12 +52,17 @@ jobs:
       - run:
           name: Install node packages
           command: |
-            npm install
+            yarn install
+      
+      - run:
+          name: Start app
+          command: |
+            yarn start
 
       - run:
           name: Run tests
           command: |
-            npm test
+            yarn test
   
       - restore_cache:
           keys:
@@ -65,12 +70,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: yarn install
-
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
-      # run tests!
-      - run: yarn test
