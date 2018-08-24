@@ -12,6 +12,4 @@ RUN npm install --production
 
 ADD . /usr/src/app/
 
-RUN mkdir hahah
-COPY here/there/* /usr/src/app/
 ENTRYPOINT ["npm", "start"]
