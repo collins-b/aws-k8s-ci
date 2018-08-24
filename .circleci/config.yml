@@ -73,3 +73,10 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      
+      - run:
+        	name: Build docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                - ./deployment.sh
+						fi
