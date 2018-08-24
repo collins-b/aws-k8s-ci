@@ -62,6 +62,12 @@ jobs:
           name: Run tests
           command: |
             yarn test
+      - run:
+          name: Build docker
+          comand: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              - ./deployment.sh
+            fi  
   
       - restore_cache:
           keys:
@@ -73,10 +79,3 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
-      - run:
-        	name: Build docker image
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                - ./deployment.sh
-						fi
