@@ -64,7 +64,7 @@ jobs:
             yarn test
       - run:
           name: Build docker
-          comand: |
+          command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               - ./deployment.sh
             fi  
