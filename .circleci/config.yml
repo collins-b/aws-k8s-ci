@@ -76,8 +76,8 @@ jobs:
                 - ./deployment.sh
 						fi
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
+# workflows:
+#   version: 2
+#   build:
+#     jobs:
+#       - build
