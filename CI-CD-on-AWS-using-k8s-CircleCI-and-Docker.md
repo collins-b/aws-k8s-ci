@@ -180,6 +180,27 @@ http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-da
 I'll use [Docker hub](https://hub.docker.com/) as the registry, which will host the image we'll be using in this article. 
 I pushed the image [here](https://hub.docker.com/r/wecs/demo/).
 
+The Dockerfile of this image is as shown below:
+
+```
+FROM node
+ENV NPM_CONFIG_LOGLEVEL warn
+RUN mkdir -p /usr/src/app
+
+EXPOSE 3000
+
+WORKDIR /usr/src/app
+
+ADD package.json /usr/src/app/
+
+RUN npm install --production
+
+ADD . /usr/src/app/
+
+ENTRYPOINT ["npm", "start"]
+
+```
+
 ### CircleCI
 As I'll be using CircleCI 2.0, the configuration file will be under a `.circleci` folder. You can check [here](https://circleci.com/docs/2.0/configuration-reference/) to read more about how to configure CircleCI.
 
@@ -341,3 +362,57 @@ spec:
         - containerPort: 3000
          name: demo
 ```
+
+### Testing
+
+First off, I'll assume up to this point, you've set up everything as required, following the above steps. So, next activity is to test all the process, and confirm that our CI/CD pipeline is working fine.
+
+Clone [this](https://github.com/collins-b/aws-k8s-ci.git) repository, and make sure the folder structure is as shown below:
+
+```
+.
+├── Dockerfile
+├── README.md
+├── deployment.sh
+├── index.html
+├── k8s-deployment.yaml
+├── package.json
+├── server.js
+├── test
+```
+
+i. Confirm the current context is set to the k8s cluster in the AWS.
+
+   `kubectl config  current-context`. Output should be the cluster name. For my case `cd.k8s.local`
+
+ii. Let's create an initial deployment, manually. Run:
+    
+   `kubectl create -f k8s-deployment.yaml` 
+   
+   This will create a deployment and a service. You can confirm that the created resources are okay:
+   
+```
+   kubectl get po
+NAME                    READY     STATUS    RESTARTS   AGE
+demo-75898b97f9-7jngz   1/1       Running   0          13m
+```
+
+```
+kubectl get deployment
+NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+demo      1         1         1            1           2d
+```
+iii. We can port forward the deployment and access the application locally, to confirm if the deployment was successful.
+
+`kubectl port-forward demo-75898b97f9-7jngz 3000:3000`
+
+You can the navigate to `127.0.0.1:3000`, on your favorite browser. The application should load as shown below:
+
+--image--
+
+iv. Next, let's test the CI/CD. Assuming you have a CircleCI account, push the project's codebase to Github, Gitlab or Bitbucket. I'm using Github. Then login to your CircleCI account and enable this project to start building. So that, any push or merge to master branch, will trigger the build, hence deployment. If you have followed keenly, the CI/CD should complete successfully as shown below:
+
+--image--
+
+v. Confirm your pod. This round the pod name should have changed because of the new deployment which just happened.
+
