@@ -18,7 +18,8 @@ This article aims at providing a step by step guide of creating a CI/CD pipeline
 2. Kubernetes on AWS
 3. Docker registry
 4. CircleCI
-5. Testing
+5. Kubernetes
+6. Testing
 
 ### AWS Setup
 If you don't have an AWS account, you can create one [here](https://aws.amazon.com/free/), and make use of the free tier services. I'm going to use a free tier account through out this tutorial.
@@ -180,3 +181,163 @@ I'll use [Docker hub](https://hub.docker.com/) as the registry, which will host 
 I pushed the image [here](https://hub.docker.com/r/wecs/demo/).
 
 ### CircleCI
+As I'll be using CircleCI 2.0, the configuration file will be under a `.circleci` folder. You can check [here](https://circleci.com/docs/2.0/configuration-reference/) to read more about how to configure CircleCI.
+
+The final configuration is shown below:
+
+```
+version: 2
+jobs:
+  build:
+    docker:
+      - image: wecs/aws-k8s:1.0.0
+    working_directory: ~/workspace
+    environment:
+      DEPLOYMENT_NAME: demo
+      CONTAINER_NAME: demo
+      KOPS_STATE_STORE: cd.k8s.local
+
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: Install node packages
+          command: |
+            yarn install
+      
+      - run:
+          name: Start app
+          command: |
+            yarn start &
+      - run:
+          name: Run tests
+          command: |
+            yarn test
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      
+      - run:
+          name: Build and Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sudo chmod +x ./deployment.sh && ./deployment.sh
+            fi  
+```
+ Let me briefly explain the above file.
+ 
+ `version: 2`- Specifies the CircleCI version that I'm using, which is 2.0.
+ 
+ `jobs`- Specifies jobs that are intended to be run. For my case, I only have a single job, called `build`.
+ 
+ `image: wecs/aws-k8s:1.0.0`. I created this image to be used as a high level environment. The image has Python, Kops, K8s and AWS CLI installed. The Dockerfile for this image is as shown below:
+ 
+```
+FROM circleci/node:7.10
+RUN sudo apt-get update && sudo apt-get install gettext docker python-pip python-setuptools wget
+RUN sudo apt-get install python-dev
+RUN sudo wget -q https://storage.googleapis.com/kubernetes-release/release/v1.6.1/bin/linux/amd64/kubectl && sudo chmod +x kubectl && sudo mv kubectl /usr/bin
+RUN sudo wget -q https://github.com/kubernetes/kops/releases/download/1.9.0/kops-linux-amd64 && sudo chmod +x kops-linux-amd64 && sudo mv kops-linux-amd64 /usr/bin/kops
+RUN sudo pip install awscli
+
+```
+`environment`, specifies the necessary environment variables that I'm going to use.
+
+The `steps` are self explanatory. 
+
+Please note the `deployment.sh` script file. This hosts various commands for building and updating the deployment, automatically.
+
+```
+# !/bin/bash
+
+set -e
+docker build -t wecs/demo:$CIRCLE_SHA1 .
+
+docker login -u="$HUB_USER" -p="$HUB_PASS" docker.io  && docker push wecs/demo:$CIRCLE_SHA1
+export KOPS_STATE_STORE=s3://delan
+echo $KOPS_STATE_STORE
+NAME=cd.k8s.local
+kops export kubecfg ${NAME}
+
+export PASSWORD=`kops get secrets kube --type secret -oplaintext`
+
+sudo kubectl --insecure-skip-tls-verify=true --username=$USERNAME --password=$PASSWORD --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
+
+echo "✓ Successful..."
+```
+`$HUB_USER` and `$HUB_PASS` - This is docker-hub's username and password respectively, set as environment variables in CircleCi.
+You can set using your account details.
+
+`KOPS_STATE_STORE` - Provide the name of the S3 bucket you created while provisioning kops. I prefer setting it as an environment variable. I called mine `KOPS_STORE`.
+
+```
+CLUSTER_NAME=cd.k8s.local
+kops export kubecfg ${CLUSTER_NAME}
+```
+This specify and sets a cluster. For this case, context is set to a cluster called `cd.k8s.local`. You can use the cluster you created during the provisioning of kops.
+
+`$USERNAME` and `$PASSWORD` - Cluster username and password respectively. I have set the username as an environment variable.
+
+`$MASTER_SERVER` - This is the address of master, which can be found by running, `kubectl cluster-info`. It's also good to set this as an environment variable.
+
+**NOTE:**
+
+Remember to set up AWS permissions, by providing `Access key ID` and `Secret access key`. You can get these two on the AWS console, or from the file you downloaded during creation of the IAM user. Otherwise you'll face permission issues. These two keys will be used for authenticating against AWS services during the builds.
+
+### Kubernetes
+
+As we are going to use Kubernetes as an orchestration tool, we'll have to define its artifacts. The file below is a basic YAML file defining the K8s deployment and service. This should be very familiar if you have some experience working with k8s:
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  labels:
+    app: demo
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: demo
+  selector:
+    app: demo
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: demo
+  labels:
+    app: demo
+spec:
+  selector:
+    matchLabels:
+      app: demo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - image: wecs/demo:latest
+        name: demo
+        ports:
+        - containerPort: 3000
+         name: demo
+```
