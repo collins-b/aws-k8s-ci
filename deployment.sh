@@ -10,8 +10,8 @@ NAME=cd.k8s.local
 kops export kubecfg ${NAME}
 
 export PASSWORD=`kops get secrets kube --type secret -oplaintext`
-kubectl config set-credentials cluster-admin --username=admin --password=$PASSWORD
+# kubectl config set-credentials cluster-admin 
 
 echo "✓"
 
-sudo kubectl --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
+sudo kubectl --username=admin --password=$PASSWORD --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
