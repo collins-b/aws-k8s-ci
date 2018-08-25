@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: wecs/aws-k8s
+      - image: wecs/aws-k8s:1.0.0
     working_directory: ~/workspace
     environment:
       DEPLOYMENT_NAME: demo
