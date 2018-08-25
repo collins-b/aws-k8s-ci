@@ -1,7 +1,6 @@
 # !/bin/bash
 
 set -e
-kops e4s1`version
 docker build -t wecs/demo:$CIRCLE_SHA1 .
 
 docker login -u="$HUB_USER" -p="$HUB_PASS" docker.io  && docker push wecs/demo:$CIRCLE_SHA1
