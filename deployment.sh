@@ -6,11 +6,11 @@ docker build -t wecs/demo:$CIRCLE_SHA1 .
 docker login -u="$HUB_USER" -p="$HUB_PASS" docker.io  && docker push wecs/demo:$CIRCLE_SHA1
 export KOPS_STATE_STORE=$KOPS_STORE
 echo $KOPS_STATE_STORE
-NAME=cd.k8s.local
-kops export kubecfg ${NAME}
+CLUSTER_NAME=cd.k8s.local
+kops export kubecfg ${CLUSTER_NAME}
 
 export PASSWORD=`kops get secrets kube --type secret -oplaintext`
 
-sudo kubectl --insecure-skip-tls-verify=true --username=$USERNAME --password=$PASSWORD --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
+sudo kubectl --insecure-skip-tls-verify=true --username=$USERNAME --password=$PASSWORD --server $MASTER_SERVER set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
 
 echo "✓ Successful..."
