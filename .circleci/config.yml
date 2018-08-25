@@ -30,13 +30,7 @@ jobs:
           name: Run tests
           command: |
             yarn test
-      - run:
-          name: Build docker
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              sudo chmod +x ./deployment.sh && ./deployment.sh
-            fi  
-  
+
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -46,4 +40,11 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      
+      - run:
+          name: Build and Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sudo chmod +x ./deployment.sh && ./deployment.sh
+            fi  
   
