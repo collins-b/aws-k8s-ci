@@ -1,9 +1,9 @@
-# CI/CD on AWS using Kubernetes, CircleCI and Docker
+# CI/CD on AWS using Kubernetes, CircleCI, and Docker
 
 
 ## Introduction
 
-This article aims at providing a step by step guide of creating a CI/CD pipeline in AWS, using CircleCI, Kubernetes and Docker.
+This article aims at providing a step by step guide of creating a CI/CD pipeline in AWS, using CircleCI, Kubernetes and, Docker.
 
 [CircleCI](https://circleci.com/) is a continuous integration tool, used to build, test and deploy applications easier and faster.
 
@@ -11,7 +11,7 @@ This article aims at providing a step by step guide of creating a CI/CD pipeline
 
 [Docker](https://www.docker.com/), is a tool that is used to create, deploy, and run applications by using containers.
 
-*Note*: I'll that assume you have basic understanding of the above tools. I won't go into depth explaining what each tool is.
+*Note*: I'll that assume you have a basic understanding of the above tools. I won't go into depth explaining what each tool is.
 
 ## Outline
 1. AWS Setup
@@ -22,7 +22,7 @@ This article aims at providing a step by step guide of creating a CI/CD pipeline
 6. Testing
 
 ### AWS Setup
-If you don't have an AWS account, you can create one [here](https://aws.amazon.com/free/), and make use of the free tier services. I'm going to use a free tier account through out this tutorial.
+If you don't have an AWS account, you can create one [here](https://aws.amazon.com/free/), and make use of the free tier services. I'm going to use a free tier account throughout this tutorial.
 
 Next, create an IAM user, who will be used for doing various administrative roles. We're going to create this user using the console. In the navigation pane, choose **Users**, then click on the **Add User** button. Select **Programmatic access** option, and remember to download the access keys for later reference.
 
@@ -43,7 +43,7 @@ Linux - `pip install awscli --upgrade --user`
 
 Windows - Refer [here](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html)
 
-If all went well in the above installlation steps, let us now configure the AWS CLI. You need to provide the Access Key, Secret Access Key and the AWS region that you want the K8s cluster to be installed. 
+If all went well in the above installation steps, let us now configure the AWS CLI. You need to provide the Access Key, Secret Access Key and the AWS region that you want the K8s cluster to be installed. 
 
 Run `aws configure`
 
@@ -56,7 +56,7 @@ Default region name [None]: us-west-2
 Default output format [None]:
 ```
 
-To provision Kubernetes, we'll use kops, which expects an s3 bucket to persist its state. So, lets create the bucket:
+To provision Kubernetes, we'll use kops, which expects an s3 bucket to persist its state. So, let's create the bucket:
 
 ```
 aws s3api create-bucket --bucket awsk8s --create-bucket-configuration LocationConstraint=us-west-2
@@ -137,9 +137,9 @@ If everything looks good to you, create the cluster by running:
 ```
 kops update cluster --name ${KOPS_CLUSTER_NAME} --yes
 ```
-Finally validate the cluster:
+Finally, validate the cluster:
 
-`kops validate cluster` . Give it some time for the cluster to be up and running. You should get something similar to the output below, if the cluster is provisioned successfully:
+`kops validate cluster` . Give it some time for the cluster to be up and running. You should get something similar to the output below if the cluster is provisioned successfully:
 
 ```
 Validating cluster cd.k8s.local
@@ -263,7 +263,7 @@ jobs:
  
  `jobs`- Specifies jobs that are intended to be run. For my case, I only have a single job, called `build`.
  
- `image: wecs/aws-k8s:1.0.0`. I created this image to be used as a high level environment. The image has Python, Kops, K8s and AWS CLI installed. The Dockerfile for this image is as shown below:
+ `image: wecs/aws-k8s:1.0.0`. I created this image to be used as a high-level environment. The image has Python, Kops, K8s and AWS CLI installed. The Dockerfile for this image is as shown below:
  
 ```
 FROM circleci/node:7.10
@@ -276,7 +276,7 @@ RUN sudo pip install awscli
 ```
 `environment`, specifies the necessary environment variables that I'm going to use.
 
-The `steps` are self explanatory. 
+The `steps` are self-explanatory. 
 
 Please note the `deployment.sh` script file. This hosts various commands for building and updating the deployment, automatically.
 
@@ -307,7 +307,7 @@ You can set using your account details.
 CLUSTER_NAME=cd.k8s.local
 kops export kubecfg ${CLUSTER_NAME}
 ```
-This specify and sets a cluster. For this case, context is set to a cluster called `cd.k8s.local`. You can use the cluster you created during the provisioning of kops.
+This specifies and sets a cluster. For this case, context is set to a cluster called `cd.k8s.local`. You can use the cluster you created during the provisioning of kops.
 
 `$USERNAME` and `$PASSWORD` - Cluster username and password respectively. I have set the username as an environment variable.
 
@@ -315,7 +315,7 @@ This specify and sets a cluster. For this case, context is set to a cluster call
 
 **NOTE:**
 
-Remember to set up AWS permissions, by providing `Access key ID` and `Secret access key`. You can get these two on the AWS console, or from the file you downloaded during creation of the IAM user. Otherwise you'll face permission issues. These two keys will be used for authenticating against AWS services during the builds.
+Remember to set up AWS permissions, by providing `Access key ID` and `Secret access key`. You can get these two on the AWS console, or from the file, you downloaded during the creation of the IAM user. Otherwise, you'll face permission issues. These two keys will be used for authenticating against AWS services during the builds.
 
 ### Kubernetes
 
@@ -383,7 +383,7 @@ Clone [this](https://github.com/collins-b/aws-k8s-ci.git) repository, and make s
 
 i. Confirm the current context is set to the k8s cluster in the AWS.
 
-   `kubectl config  current-context`. Output should be the cluster name. For my case `cd.k8s.local`
+   `kubectl config  current-context`. Output should be the cluster name. In my case `cd.k8s.local`
 
 ii. Let's create an initial deployment, manually. Run:
     
@@ -410,9 +410,22 @@ You can the navigate to `127.0.0.1:3000`, on your favorite browser. The applicat
 
 --image--
 
-iv. Next, let's test the CI/CD. Assuming you have a CircleCI account, push the project's codebase to Github, Gitlab or Bitbucket. I'm using Github. Then login to your CircleCI account and enable this project to start building. So that, any push or merge to master branch, will trigger the build, hence deployment. If you have followed keenly, the CI/CD should complete successfully as shown below:
+iv. Next, let's test the CI/CD. Assuming you have a CircleCI account, push the project's codebase to Github, Gitlab or Bitbucket. I'm using Github. Then login to your CircleCI account and enable this project to start building. So that, any push or merge to the master branch, will trigger the build, hence deployment. If you have followed keenly, the CI/CD should complete successfully as shown below:
 
 --image--
 
 v. Confirm your pod. This round the pod name should have changed because of the new deployment which just happened.
 
+```
+kubectl get po
+NAME                    READY     STATUS    RESTARTS   AGE
+demo-57d98d674c-mm5ls   1/1       Running   0          4m
+```
+
+vi. Let us now modify our application and confirm if the changes are reflected after the deployment. You can update the `index.html` file with any content, save, commit and push. You can push directly to master(this is not a production environment :) ) or push to a different branch then merge to master(best practice). Watch CircleCI build, the confirm on your browser if the changes have been reflected. To do this, just repeat step (iii), though remember to use the correct pod name, not the outdated one.
+
+**Note:** 
+
+i. You should have noticed I actually don’t have tests. The article aims at showcasing deployment not really TDD. 
+ii. I’m using Docker hub as the image registry. Note that I could have used ECR, quay etc. I just find Docker hub easy to set and manage images. Also, it’s good for learning, as it has a minimal learning curve.
+iii. This kind of deployment is best suited in a staging environment, not production. Simply because automating deployment directly to production is kinda dangerous. Production deployments should have some human control.
