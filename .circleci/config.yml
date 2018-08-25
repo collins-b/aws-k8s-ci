@@ -1,45 +1,12 @@
-# version: 2
-# jobs:
-#   build:
-#     docker:
-#       - image: circleci/node:8.9
-#      working_directory: ~/demo
-#     steps:
-#       - checkout
-#       - setup_remote_docker
-#       - restore_cache:
-#           keys:
-#           - v1-dependencies-{{ checksum "package.json" }}
-#           - v1-dependencies-
-
-#       - run:
-#           name: Install node packages
-#           command: |
-#             npm install
-
-#       - save_cache:
-#           paths:
-#             - node_modules
-#           key: v1-dependencies-{{ checksum "package.json" }}
-
-#       - run:
-#           name: Run tests
-#           command: |
-#             npm test
-
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:7.10
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
+      - image: wecs/aws-k8s
     working_directory: ~/workspace
+    environmet:
+      DEPLOYMENT_NAME: demo
+      KOPS_STATE_STORE: s3://kops.in.out
 
     steps:
       - checkout
@@ -72,10 +39,10 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+  
