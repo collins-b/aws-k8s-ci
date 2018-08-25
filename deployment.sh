@@ -4,7 +4,7 @@ set -e
 docker build -t wecs/demo:$CIRCLE_SHA1 .
 
 docker login -u="$HUB_USER" -p="$HUB_PASS" docker.io  && docker push wecs/demo:$CIRCLE_SHA1
-export KOPS_STATE_STORE=s3://delan
+export KOPS_STATE_STORE=$KOPS_STORE
 echo $KOPS_STATE_STORE
 NAME=cd.k8s.local
 kops export kubecfg ${NAME}
