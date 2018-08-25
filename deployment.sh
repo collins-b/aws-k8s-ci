@@ -14,4 +14,4 @@ export PASSWORD=`kops get secrets kube --type secret -oplaintext`
 
 echo "✓"
 
-sudo kubectl --username=admin --password=$PASSWORD --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
+sudo kubectl --insecure-skip-tls-verify=true --username=admin --password=$PASSWORD --server https://api-cd-k8s-local-con0b0-610798260.us-west-2.elb.amazonaws.com set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=wecs/demo:$CIRCLE_SHA1
