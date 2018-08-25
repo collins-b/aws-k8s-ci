@@ -4,9 +4,9 @@ jobs:
     docker:
       - image: wecs/aws-k8s
     working_directory: ~/workspace
-    environmet:
+    environment:
       DEPLOYMENT_NAME: demo
-      KOPS_STATE_STORE: s3://kops.in.out
+      KOPS_STATE_STORE: cd.k8s.local
 
     steps:
       - checkout
