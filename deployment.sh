@@ -8,7 +8,9 @@ export KOPS_STATE_STORE=s3://delan
 echo $KOPS_STATE_STORE
 NAME=cd.k8s.local
 kops export kubecfg ${NAME}
-# kubectl version
+
+export PASSWORD=kops get secrets kube --type secret -oplaintext
+kubectl config set-credentials cluster-admin --username=admin --password=$PASSWORD
 
 echo "✓"
 
