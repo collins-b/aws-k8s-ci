@@ -6,6 +6,7 @@ jobs:
     working_directory: ~/workspace
     environment:
       DEPLOYMENT_NAME: demo
+      CONTAINER_NAME: demo
       KOPS_STATE_STORE: cd.k8s.local
 
     steps:
