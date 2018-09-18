@@ -50,6 +50,7 @@ jobs:
           command: |
             VERSION=1.0.0
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./workspace/
+
 workflows:
   version: 2
   main:
@@ -62,8 +63,8 @@ workflows:
           requires:
             - build
           filters:
-            # branches:
-            #   ignore: /.*/
+            branches:
+              ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d+$/
 
