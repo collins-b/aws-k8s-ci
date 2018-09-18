@@ -67,9 +67,9 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d+$/
 
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - publish-github-release
+# workflows:
+#   version: 2
+#   build_and_test:
+#     jobs:
+#       - build
+#       - publish-github-release
