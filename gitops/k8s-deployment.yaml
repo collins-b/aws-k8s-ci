@@ -32,7 +32,7 @@ spec:
         app: demo
     spec:
       containers:
-      - image: platformcustom/gitops:ff27b6c
+      - image: platformcustom/gitops:80d8b98
         imagePullPolicy: IfNotPresent
         name: demo
         ports:
