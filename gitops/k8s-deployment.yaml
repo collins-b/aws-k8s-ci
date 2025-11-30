@@ -12,24 +12,24 @@ spec:
     protocol: TCP
     name: demo
   selector:
-    app: demo
+    app: demo1
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo
+  name: demo1
   labels:
-    app: demo
+    app: demo1
 spec:
   selector:
     matchLabels:
-      app: demo
+      app: demo1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: demo
+        app: demo1
     spec:
       containers:
       - image: platformcustom/gitops:80d8b98
