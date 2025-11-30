@@ -9,13 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    container:
-      image: wecs/aws-k8s:1.0.0
-    
-    env:
-      DEPLOYMENT_NAME: demo
-      CONTAINER_NAME: demo
-
     steps:
       - name: Checkout
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
